@@ -5,6 +5,9 @@ version = 4
 [[package]]
 name = "components"
 version = "0.1.0"
+dependencies = [
+ "components_macros",
+]
 
 [[package]]
 name = "components_macros"
