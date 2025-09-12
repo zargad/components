@@ -1,5 +1,7 @@
-pub trait Component<I, T> {
-    fn get(&self, input: I) -> T;
+pub trait Component {
+    type Input;
+    type Output;
+    fn get(&self, input: Self::Input) -> Self::Output;
 }
 
 pub struct Uniform<T> {
@@ -12,11 +14,12 @@ impl<T> Uniform<T> {
     }
 }
 
-impl<I, T> Component<I, T> for Uniform<T>
+impl<T> Component for Uniform<T>
 where 
     T: std::marker::Copy,
+    C: Component<Output = T>
 {
-    fn get(&self, _input: I) -> T {
+    fn get(&self, _input: C::Input) -> C::Output {
         self.value
     }
 }
@@ -31,11 +34,12 @@ impl<const W: usize, const H: usize, T> Matrix<W, H, T> {
     }
 }
 
-impl<const W: usize, const H: usize, T> Component<(isize, isize), T> for Matrix<W, H, T> 
+impl<const W: usize, const H: usize, C, T> C for Matrix<W, H, T> 
 where 
     T: std::marker::Copy + Default,
+    C: Component<Input = (isize, isize), Output = T>
 {
-    fn get(&self, input: (isize, isize)) -> T {
+    fn get(&self, input: C::Input) -> C::Output {
         let (x, y) = input;
         let Ok(x) = usize::try_from(x) else { return Default::default() };
         let Ok(y) = usize::try_from(y) else { return Default::default() };
