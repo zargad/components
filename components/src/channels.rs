@@ -35,9 +35,9 @@ mod tests {
 
     impl Channel<Event> for EventChannel {
         fn set(&self, value: Event) -> Self {
-            let mut this = *self;
-            this.event = value;
-            this
+            let mut copy = *self;
+            copy.event = value;
+            copy
         }
         fn get(&self) -> Event {
             self.event
