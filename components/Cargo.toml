@@ -1,0 +1,11 @@
+[package]
+name = "components"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+components_macros = { path = "../components_macros", optional = true }
+
+[features]
+default = ["macros"]
+macros = ["components_macros"]
