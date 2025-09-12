@@ -12,7 +12,7 @@ pub fn channels(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     toks.into()
 }
 
-pub fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
+fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
     let name = &ast.ident;
     let generics = &ast.generics;
     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
@@ -41,6 +41,6 @@ pub fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
     })
 }
 
-pub fn non_struct_error() -> syn::Error {
+fn non_struct_error() -> syn::Error {
     syn::Error::new(Span::call_site(), "This macro only supports structs.")
 }

@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "components",
+    "components", "components_macros",
 ]
 resolver = "3"
