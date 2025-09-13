@@ -24,7 +24,7 @@ fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
 
     let generated_code = fields.iter().map(|f| (f.clone().ident.expect("struct fields have names"), f.ty.clone())).map(|(field, ty)| {
         quote! {
-            impl #impl_generics ::components::__private::Channel<#ty> for #name #ty_generics #where_clause {
+            impl #impl_generics ::components::__private::Channel<#ty, #ty> for #name #ty_generics #where_clause {
                 fn set(&self, value: #ty) -> Self {
                     let mut clone = *self;
                     clone.#field = value;
