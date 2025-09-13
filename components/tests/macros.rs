@@ -1,4 +1,5 @@
 use components::channels::Channel;
+use components::channels::DuelChannel;
 use components::Channels;
 
 #[test]
@@ -13,6 +14,21 @@ fn test_derive_channels_set() {
     let channel = get_test_channel();
     let new_position = (-5, 20);
     let channel = channel.set(new_position);
+    assert_eq!(channel.position, new_position);
+}
+
+#[test]
+fn test_derive_duel_channels_get() {
+    let channel = get_test_channel();
+    let color: Rgb = channel.duel_get();
+    assert_eq!(color, channel.color);
+}
+
+#[test]
+fn test_derive_duel_channels_set() {
+    let channel = get_test_channel();
+    let new_position = (-5, 20);
+    let channel = channel.duel_set(new_position);
     assert_eq!(channel.position, new_position);
 }
 

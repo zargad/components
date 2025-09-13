@@ -33,6 +33,21 @@ mod tests {
         assert_eq!(channel.event, new_event);
     }
 
+    #[test]
+    fn test_duel_get() {
+        let channel = get_test_channel();
+        let event: Event = channel.duel_get();
+        assert_eq!(event, channel.event);
+    }
+
+    #[test]
+    fn test_duel_set() {
+        let channel = get_test_channel();
+        let new_event = Event::Exit;
+        let channel = channel.duel_set(new_event);
+        assert_eq!(channel.event, new_event);
+    }
+
     fn get_test_channel() -> EventChannel {
         EventChannel {
             event: Event::Keyboard,
@@ -54,6 +69,8 @@ mod tests {
             self.event
         }
     }
+
+    impl DuelChannel<Event, Event> for EventChannel {}
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq)]
     enum Event {
