@@ -8,6 +8,7 @@ proc-macro = true
 name = "components_macros"
 
 [dependencies]
+itertools = "0.14.0"
 proc-macro2 = "1.0.101"
 quote = "1.0.40"
-syn = "2.0.106"
+syn = { version = "2.0.106", features = ["extra-traits"] }
