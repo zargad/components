@@ -1,6 +1,6 @@
-pub trait Channel<T>: std::marker::Copy {
-    fn set(&self, value: T) -> Self;
-    fn get(&self) -> T;
+pub trait Channel<A, B>: std::marker::Copy {
+    fn get(&self) -> A;
+    fn set(&self, value: B) -> Self;
 }
 
 #[cfg(test)]
@@ -33,7 +33,7 @@ mod tests {
         event: Event,
     }
 
-    impl Channel<Event> for EventChannel {
+    impl Channel<Event, Event> for EventChannel {
         fn set(&self, value: Event) -> Self {
             let mut copy = *self;
             copy.event = value;
