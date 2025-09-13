@@ -4,7 +4,7 @@ use components::Channels;
 #[test]
 fn test_derive_channels_get() {
     let channel = get_test_channel();
-    let color: Rgb = channel.get();
+    let color: Rgb = <GraphicsChannel as Channel<Rgb, (isize, isize)>>::get(&channel);
     assert_eq!(color, channel.color);
 }
 
@@ -12,7 +12,7 @@ fn test_derive_channels_get() {
 fn test_derive_channels_set() {
     let channel = get_test_channel();
     let new_position = (-5, 20);
-    let channel = channel.set(new_position);
+    let channel = <GraphicsChannel as Channel<Rgb, (isize, isize)>>::set(&channel, new_position);
     assert_eq!(channel.position, new_position);
 }
 

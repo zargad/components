@@ -3,6 +3,7 @@ extern crate proc_macro;
 use proc_macro2::{TokenStream, Span};
 use quote::quote;
 use syn::{Data, DeriveInput};
+use itertools::Itertools;
 
 #[proc_macro_derive(Channels)]
 pub fn channels(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -22,16 +23,18 @@ fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         _ => return Err(non_struct_error()),
     };
 
-    let generated_code = fields.iter().map(|f| (f.clone().ident.expect("struct fields have names"), f.ty.clone())).map(|(field, ty)| {
+    let fields = fields.iter().map(|f| (f.clone().ident.expect("struct fields have names"), f.ty.clone()));
+    let generated_code = fields.clone().cartesian_product(fields)
+        .map(|((field_a, ty_a), (field_b, ty_b))| {
         quote! {
-            impl #impl_generics ::components::__private::Channel<#ty, #ty> for #name #ty_generics #where_clause {
-                fn set(&self, value: #ty) -> Self {
-                    let mut clone = *self;
-                    clone.#field = value;
-                    clone
+            impl #impl_generics ::components::__private::Channel<#ty_a, #ty_b> for #name #ty_generics #where_clause {
+                fn get(&self) -> #ty_a {
+                    self.#field_a
                 }
-                fn get(&self) -> #ty {
-                    self.#field
+                fn set(&self, value: #ty_b) -> Self {
+                    let mut clone = *self;
+                    clone.#field_b = value;
+                    clone
                 }
             }
         }
