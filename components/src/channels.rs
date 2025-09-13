@@ -3,6 +3,18 @@ pub trait Channel<A, B>: std::marker::Copy {
     fn set(&self, value: B) -> Self;
 }
 
+impl<A, B, C> Channel<A, B> for C
+where
+    C: Channel<A, A> + Channel<B, B>,
+{
+    fn get(&self) -> A {
+        self.get()
+    }
+    fn set(&self, value: B) -> Self {
+        self.set(value)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
