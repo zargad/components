@@ -22,7 +22,7 @@ fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         _ => return Err(non_struct_error()),
     };
 
-    let generated_code = fields.iter().map(|f| (f.clone().ident.expect("struct fields have names"), f.ty.clone())).map(|(field, ty)| {
+    let generated_code = fields.iter().map(|f| (f.clone().ident.expect("struct fields should have names"), f.ty.clone())).map(|(field, ty)| {
         quote! {
             impl #impl_generics ::components::__private::Channel<#ty> for #name #ty_generics #where_clause {
                 fn set(&self, value: #ty) -> Self {
