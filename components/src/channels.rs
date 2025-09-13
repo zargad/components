@@ -1,6 +1,17 @@
-pub trait Channel<T>: std::marker::Copy {
-    fn set(&self, value: T) -> Self;
+use std::marker::Copy;
+
+pub trait Channel<T>: Copy {
     fn get(&self) -> T;
+    fn set(&self, value: T) -> Self;
+}
+
+pub trait DuelChannel<A, B>: Copy + Channel<A> + Channel<B> {
+    fn duel_get(&self) -> A {
+        self.get()
+    }
+    fn duel_set(&self, value: B) -> Self {
+        self.set(value)
+    }
 }
 
 #[cfg(test)]
