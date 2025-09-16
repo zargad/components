@@ -1,7 +1,6 @@
 use std::marker::Copy;
 use std::marker::PhantomData;
 use crate::channels::Channel;
-use crate::channels::DuelChannel;
 
 pub trait Process<C> {
     fn process(&self, channel: C) -> C;
@@ -59,27 +58,19 @@ where
     }
 }
 
-pub struct Chain<A, B> {
-    processes: Vec<Box<dyn DuelChannel<A, B>>>,
+pub struct Chain<C> {
+    processes: Vec<Box<dyn Process<C>>>,
 }
 
-impl<A, B> Chain<A, B> {
-    pub fn new(processes: Vec<Box<dyn DuelChannel<A, B>>>) -> Self {
+impl<C> Chain<C> {
+    pub fn new(processes: Vec<Box<dyn Process<C>>>) -> Self {
         Self { processes }
     }
 }
 
-impl<A, B, C> Process<C> for Chain<A, B> 
-where
-    A: Copy,
-    B: Copy,
-    C: DuelChannel<A, B>,
-{
+impl<C> Process<C> for Chain<C> {
     fn process(&self, channel: C) -> C {
-        let mut channel = channel;
-        for process in &self.processes {
-            channel = process.process(channel);
-        }
-        channel
+        self.processes.iter()
+            .fold(channel, |c, p| p.process(c))
     }
 }
