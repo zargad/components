@@ -74,3 +74,91 @@ impl<C> Process<C> for Chain<C> {
             .fold(channel, |c, p| p.process(c))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_assign() {
+        let channel = get_test_channel();
+        let new_position = (20, -3);
+        let assign = Assign::new(new_position);
+        let new_channel = assign.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.position, new_position);
+
+        let channel = new_channel;
+        let new_color = Rgb { red: 0, green: 255, blue: 0 };
+        let assign = Assign::new(new_color);
+        let new_channel = assign.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.color, new_color);
+    }
+
+    #[test]
+    fn test_map() {
+        let channel = get_test_channel();
+        let map = Map::new(|color: Rgb| (color.red.into(), color.green.into()));
+        let new_channel = map.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!((new_channel.color.red.into(), new_channel.color.green.into()), new_channel.position);
+    }
+
+    #[test]
+    fn test_chain() {
+        let channel = get_test_channel();
+        let new_color = Rgb { red: 0, green: 127, blue: 255 };
+        let new_position = (32, 0);
+        let chain = Chain::new(vec![
+            Box::new(Assign::new(new_color)),
+            Box::new(Assign::new(new_position)),
+        ]);
+        let new_channel = chain.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.color, new_color);
+        assert_eq!(new_channel.position, new_position);
+    }
+
+    fn get_test_channel() -> GraphicsChannel {
+        GraphicsChannel {
+            position: (50, 50),
+            color: Rgb { red: 255, green: 0, blue: 0 },
+        }
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct GraphicsChannel {
+        position: (isize, isize),
+        color: Rgb,
+    }
+
+    impl Channel<Rgb> for GraphicsChannel {
+        fn get(&self) -> Rgb {
+            self.color
+        }
+        fn set(&self, value: Rgb) -> Self {
+            let mut copy = *self;
+            copy.color = value;
+            copy
+        }
+    }
+
+    impl Channel<(isize, isize)> for GraphicsChannel {
+        fn get(&self) -> (isize, isize) {
+            self.position
+        }
+        fn set(&self, value: (isize, isize)) -> Self {
+            let mut copy = *self;
+            copy.position = value;
+            copy
+        }
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct Rgb {
+        red: u8,
+        green: u8,
+        blue: u8,
+    }
+}
