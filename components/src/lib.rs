@@ -1,5 +1,6 @@
 pub mod components;
 pub mod channels;
+pub mod processes;
 
 #[doc(hidden)]
 pub mod __private {
