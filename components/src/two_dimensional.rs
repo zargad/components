@@ -55,3 +55,85 @@ where
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_matrix_get() {
+        let matrix = get_test_matrix();
+        let value = matrix.get((2, 0));
+        assert_eq!(value, Some(&1));
+        let value = matrix.get((0, 2));
+        assert_eq!(value, Some(&2));
+        let value = matrix.get((3, -3));
+        assert_eq!(value, None);
+        let value = matrix.get((0, 1000));
+        assert_eq!(value, None);
+    }
+
+    #[test]
+    fn test_matrix_process() {
+        let matrix = get_test_matrix();
+        let channel = SimpleChannel::new((2, 0));
+        let new_channel = matrix.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.value, 1);
+        let channel = SimpleChannel::new((0, 2));
+        let new_channel = matrix.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.value, 2);
+        let channel = SimpleChannel::new((3, -3));
+        let new_channel = matrix.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.value, 0);
+        let channel = SimpleChannel::new((0, 1000));
+        let new_channel = matrix.process(channel);
+        assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        assert_eq!(new_channel.value, 0);
+    }
+
+    fn get_test_matrix() -> Matrix<4, 4, i32> {
+        Matrix::new([
+            [2, 1, 1, 2],
+            [1, 1, 1, 1],
+            [2, 1, 1, 2],
+            [1, 2, 2, 1],
+        ])
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq)]
+    struct SimpleChannel {
+        position: Point,
+        value: i32,
+    }
+
+    impl SimpleChannel {
+        fn new(position: Point) -> Self {
+            Self { position, value: 100 }
+        }
+    }
+
+    impl Channel<Point> for SimpleChannel {
+        fn get(&self) -> Point {
+            self.position
+        }
+        fn set(&self, value: Point) -> Self {
+            let mut copy = *self;
+            copy.position = value;
+            copy
+        }
+    }
+
+    impl Channel<i32> for SimpleChannel {
+        fn get(&self) -> i32 {
+            self.value
+        }
+        fn set(&self, value: i32) -> Self {
+            let mut copy = *self;
+            copy.value = value;
+            copy
+        }
+    }
+}
