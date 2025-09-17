@@ -1,5 +1,5 @@
 use std::marker::Copy;
-// use std::ops::Range;
+use std::ops::Range;
 use crate::processes::Process;
 use crate::channels::Channel;
 
@@ -18,7 +18,7 @@ impl<const W: usize, const H: usize, T> Matrix<W, H, T> {
         let (x, y) = point; 
         let x = usize::try_from(x).ok()?;
         let y = usize::try_from(y).ok()?;
-        Some(self.inner.get(y)?.get(x)?)
+        self.inner.get(y)?.get(x)
     }
 }
 
@@ -35,25 +35,23 @@ where
     }
 }
 
-// trait Screen {
-//     fn display(&self, range: (Range<isize>, Range<isize>));
-// }
-// 
-// trait Pixel {
-//     fn print(&self);
-// }
-// 
-// impl<C> Screen for C
-// where
-//     C: Component<(isize, isize), dyn Pixel>,
-// {
-//     fn display(&self, range: (Range<isize>, Range<isize>)) {
-//         let (width, height) = range;
-//         for y in height.into_iter() {
-//             for x in width.clone().into_iter() {
-//                 self.get((x, y)).print();
-//             }
-//             println!("\x1b[0m")
-//         }
-//     }
-// }
+pub trait Screen<T, C>: Process<C>
+where
+    T: Copy,
+    C: Channel<T> + Channel<(isize, isize)> + Default,
+{
+    fn print(&self, value: T);
+    fn display(&self, range: (Range<isize>, Range<isize>)) {
+        let (width, height) = range;
+        for y in height.into_iter() {
+            for x in width.clone().into_iter() {
+                let channel: C = Default::default();
+                let channel = channel.set((x, y));
+                let channel = self.process(channel);
+                let pixel = channel.get();
+                self.print(pixel);
+            }
+            println!("\x1b[0m")
+        }
+    }
+}
