@@ -136,6 +136,18 @@ mod tests {
         assert_eq!(new_channel.position, new_position);
     }
 
+    #[test]
+    fn test_wrapper() {
+        let channel = get_test_channel();
+        let new_position = (20, -3);
+        let assign = Assign::new(new_position);
+        let wrapper = Wrapper::new(Box::new(assign));
+        let assign_channel = wrapper.process(channel);
+        assert_ne!(assign_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
+        let wrapper_channel = wrapper.process(channel);
+        assert_eq!(wrapper_channel, assign_channel);
+    }
+
     fn get_test_channel() -> GraphicsChannel {
         GraphicsChannel {
             position: (50, 50),
