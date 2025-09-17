@@ -75,6 +75,22 @@ impl<C> Process<C> for Chain<C> {
     }
 }
 
+pub struct Wrapper<C> {
+    inner: Box<dyn Process<C>>,
+}
+
+impl<C> Wrapper<C> {
+    pub fn new(inner: Box<dyn Process<C>>) -> Self {
+        Self { inner }
+    }
+}
+
+impl<C> Process<C> for Wrapper<C> {
+    fn process(&self, channel: C) -> C {
+        self.inner.process(channel)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
