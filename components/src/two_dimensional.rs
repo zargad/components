@@ -35,19 +35,22 @@ where
     }
 }
 
-pub trait Screen<T, C>: Process<C>
+pub trait Screen<T, C>
 where
     T: Copy,
     C: Channel<T> + Channel<(isize, isize)> + Default,
 {
     fn print(&self, value: T);
-    fn display(&self, range: (Range<isize>, Range<isize>)) {
+    fn display<P>(&self, process: P, range: (Range<isize>, Range<isize>)) 
+    where
+        P: Process<C>
+    {
         let (width, height) = range;
         for y in height.into_iter() {
             for x in width.clone().into_iter() {
                 let channel: C = Default::default();
                 let channel = channel.set((x, y));
-                let channel = self.process(channel);
+                let channel = process.process(channel);
                 let pixel = channel.get();
                 self.print(pixel);
             }
