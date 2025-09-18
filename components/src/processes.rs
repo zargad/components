@@ -1,6 +1,7 @@
 use std::marker::Copy;
 use std::marker::PhantomData;
-use crate::channels::Channel;
+use crate::channels::ChannelSet;
+use crate::channels::ChannelGet;
 
 pub trait Process<C> {
     fn process(&self, channel: C) -> C;
@@ -19,7 +20,7 @@ impl<T> Assign<T> {
 impl<T, C> Process<C> for Assign<T> 
 where
     T: Copy,
-    C: Channel<T>,
+    C: ChannelSet<T>,
 {
     fn process(&self, channel: C) -> C {
         channel.set(self.value)
@@ -49,7 +50,7 @@ where
     A: Copy,
     B: Copy,
     F: Fn(A) -> B,
-    C: Channel<A> + Channel<B>,
+    C: ChannelGet<A> + ChannelSet<B>,
 {
     fn process(&self, channel: C) -> C {
         let a: A = channel.get();
@@ -133,10 +134,13 @@ mod tests {
         color: Rgb,
     }
 
-    impl Channel<Rgb> for GraphicsChannel {
+    impl ChannelGet<Rgb> for GraphicsChannel {
         fn get(&self) -> Rgb {
             self.color
         }
+    }
+
+    impl ChannelSet<Rgb> for GraphicsChannel {
         fn set(&self, value: Rgb) -> Self {
             let mut copy = *self;
             copy.color = value;
@@ -144,10 +148,13 @@ mod tests {
         }
     }
 
-    impl Channel<(isize, isize)> for GraphicsChannel {
+    impl ChannelGet<(isize, isize)> for GraphicsChannel {
         fn get(&self) -> (isize, isize) {
             self.position
         }
+    }
+
+    impl ChannelSet<(isize, isize)> for GraphicsChannel {
         fn set(&self, value: (isize, isize)) -> Self {
             let mut copy = *self;
             copy.position = value;
