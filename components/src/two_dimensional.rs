@@ -44,7 +44,7 @@ where
 {
     fn print(&mut self, value: T);
     fn println(&mut self);
-    fn display<P>(&mut self, process: P, range: (Range<isize>, Range<isize>)) 
+    fn display<P>(&mut self, process: &P, range: (Range<isize>, Range<isize>)) 
     where
         P: Process<C>
     {
@@ -97,6 +97,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Cursor;
 
     #[test]
     fn test_matrix_get() {
@@ -132,6 +133,16 @@ mod tests {
         assert_eq!(new_channel.value, 0);
     }
 
+    #[test]
+    fn test_writeable_screen() {
+        let matrix = get_test_matrix();
+        let mut writeable_screen = WriteableScreen::new(Cursor::new(Vec::new()));
+        <WriteableScreen<Cursor<Vec<u8>>> as LinearScreen<i32, SimpleChannel>>::display::<Matrix<4, 4, i32>>(&mut writeable_screen, &matrix, (0..3, -1..3));
+        let result = String::from_utf8(writeable_screen.buffer.into_inner()).unwrap();
+        let expected = format!("000{C}33{A}{C}333{C}{B}33{C}", C="\x1b[0m\n");
+        assert_eq!(result, expected);
+    }
+
     const A: i32 = 1;
     const B: i32 = 2;
 
@@ -144,7 +155,7 @@ mod tests {
         ])
     }
 
-    #[derive(Debug, Clone, Copy, PartialEq)]
+    #[derive(Debug, Clone, Copy, PartialEq, Default)]
     struct SimpleChannel {
         position: Point,
         value: i32,
