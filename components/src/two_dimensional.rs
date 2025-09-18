@@ -50,7 +50,7 @@ where
     {
         let (width, height) = range;
         for y in height.into_iter() {
-            for x in width.clone().into_iter() {
+            for x in width.clone() {
                 let channel: C = Default::default();
                 let channel = channel.set((x, y));
                 let channel = process.process(channel);
@@ -85,10 +85,12 @@ where
     B: Write,
 {
     fn print(&mut self, value: T) {
-        writeln!(self.buffer, "{}", value);
+        write!(self.buffer, "{}", value).unwrap(); // TODO: Figure out whether the error should
+                                                     // be propagated
     }
     fn println(&mut self) {
-        writeln!(self.buffer, "\x1b[0m");
+        writeln!(self.buffer, "\x1b[0m").unwrap(); // TODO: Figure out whether the error should
+                                                   // be propagated
     }
 }
 
