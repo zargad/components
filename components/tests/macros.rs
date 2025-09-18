@@ -32,7 +32,7 @@ fn test_derive_duel_channels_set() {
     assert_eq!(channel.position, new_position);
 }
 
-fn get_test_channel() -> GraphicsChannel {
+const fn get_test_channel() -> GraphicsChannel {
     let color = Rgb {
         red: 255,
         green: 0,

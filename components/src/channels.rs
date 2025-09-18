@@ -48,7 +48,7 @@ mod tests {
         assert_eq!(channel.event, new_event);
     }
 
-    fn get_test_channel() -> EventChannel {
+    const fn get_test_channel() -> EventChannel {
         EventChannel {
             event: Event::Keyboard,
         }
