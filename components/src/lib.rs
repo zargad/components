@@ -3,8 +3,8 @@ pub mod processes;
 
 #[doc(hidden)]
 pub mod __private {
-    pub use crate::channels::Channel;
-    pub use crate::channels::DuelChannel;
+    pub use crate::channels::ChannelGet;
+    pub use crate::channels::ChannelSet;
 }
 
 #[cfg(feature = "macros")]

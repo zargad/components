@@ -23,13 +23,18 @@ fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         _ => return Err(non_struct_error()),
     };
 
-    let fields = fields.iter().map(|f| (f.clone().ident.expect("struct fields have names"), f.ty.clone()));
+    let fields = fields.iter().map(|f| (
+        f.clone().ident.expect("struct fields have names"), 
+        f.ty.clone(),
+    ));
     let channel_impls = fields.clone().map(|(field, ty)| {
         quote! {
-            impl #impl_generics ::components::__private::Channel<#ty> for #name #ty_generics #where_clause {
+            impl #impl_generics ::components::__private::ChannelGet<#ty> for #name #ty_generics #where_clause {
                 fn get(&self) -> #ty {
                     self.#field
                 }
+            }
+            impl #impl_generics ::components::__private::ChannelSet<#ty> for #name #ty_generics #where_clause {
                 fn set(&self, value: #ty) -> Self {
                     let mut clone = *self;
                     clone.#field = value;
@@ -38,17 +43,8 @@ fn channels_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
             }
         }
     });
-    let duel_channel_impls = fields.clone().cartesian_product(fields)
-        .map(|(a, b)| (a.1, b.1))
-        .filter(|(a, b)| a != b)
-        .map(|(ty_a, ty_b)| {
-            quote! {
-                impl #impl_generics ::components::__private::DuelChannel<#ty_a, #ty_b> for #name #ty_generics #where_clause {}
-            }
-        });
     Ok(quote! {
         #(#channel_impls)*
-        #(#duel_channel_impls)*
     })
 }
 
