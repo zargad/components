@@ -11,7 +11,7 @@ pub struct Assign<T> {
 }
 
 impl<T> Assign<T> {
-    pub fn new(value: T) -> Self {
+    pub const fn new(value: T) -> Self {
         Self { value }
     }
 }
@@ -39,7 +39,7 @@ impl<A, B, F> Map<A, B, F>
 where
     F: Fn(A) -> B,
 {
-    pub fn new(map: F) -> Self {
+    pub const fn new(map: F) -> Self {
         Self { map, phantom_a: PhantomData, phantom_b: PhantomData }
     }
 }
@@ -63,7 +63,7 @@ pub struct Chain<C> {
 }
 
 impl<C> Chain<C> {
-    pub fn new(processes: Vec<Box<dyn Process<C>>>) -> Self {
+    pub const fn new(processes: Vec<Box<dyn Process<C>>>) -> Self {
         Self { processes }
     }
 }
@@ -120,7 +120,7 @@ mod tests {
         assert_eq!(new_channel.position, new_position);
     }
 
-    fn get_test_channel() -> GraphicsChannel {
+    const fn get_test_channel() -> GraphicsChannel {
         GraphicsChannel {
             position: (50, 50),
             color: Rgb { red: 255, green: 0, blue: 0 },
