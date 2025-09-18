@@ -64,9 +64,9 @@ mod tests {
     fn test_matrix_get() {
         let matrix = get_test_matrix();
         let value = matrix.get((2, 0));
-        assert_eq!(value, Some(&1));
+        assert_eq!(value, Some(&A));
         let value = matrix.get((0, 2));
-        assert_eq!(value, Some(&2));
+        assert_eq!(value, Some(&B));
         let value = matrix.get((3, -3));
         assert_eq!(value, None);
         let value = matrix.get((0, 1000));
@@ -79,11 +79,11 @@ mod tests {
         let channel = SimpleChannel::new((2, 0));
         let new_channel = matrix.process(channel);
         assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
-        assert_eq!(new_channel.value, 1);
+        assert_eq!(new_channel.value, A);
         let channel = SimpleChannel::new((0, 2));
         let new_channel = matrix.process(channel);
         assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
-        assert_eq!(new_channel.value, 2);
+        assert_eq!(new_channel.value, B);
         let channel = SimpleChannel::new((3, -3));
         let new_channel = matrix.process(channel);
         assert_ne!(new_channel, channel, "the test is invalid because the value of `channel` did not change after being processed");
@@ -94,12 +94,15 @@ mod tests {
         assert_eq!(new_channel.value, 0);
     }
 
+    const A: i32 = 1;
+    const B: i32 = 2;
+
     fn get_test_matrix() -> Matrix<4, 4, i32> {
         Matrix::new([
-            [2, 1, 1, 2],
-            [1, 1, 1, 1],
-            [2, 1, 1, 2],
-            [1, 2, 2, 1],
+            [3, 3, A, 3],
+            [3, 3, 3, 3],
+            [B, 3, 3, 3],
+            [3, 3, 3, 3],
         ])
     }
 
