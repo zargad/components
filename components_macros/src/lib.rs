@@ -3,7 +3,6 @@ extern crate proc_macro;
 use proc_macro2::{TokenStream, Span};
 use quote::quote;
 use syn::{Data, DeriveInput};
-use itertools::Itertools;
 
 #[proc_macro_derive(Channels)]
 pub fn channels(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
