@@ -1,5 +1,7 @@
 use std::marker::Copy;
 use std::ops::Range;
+use std::io::Write;
+use std::fmt::Display;
 use crate::processes::Process;
 use crate::channels::Channel;
 
@@ -40,9 +42,9 @@ where
     T: Copy,
     C: Channel<T> + Channel<(isize, isize)> + Default,
 {
-    fn print(&self, value: T);
-    fn println(&self);
-    fn display<P>(&self, process: P, range: (Range<isize>, Range<isize>)) 
+    fn print(&mut self, value: T);
+    fn println(&mut self);
+    fn display<P>(&mut self, process: P, range: (Range<isize>, Range<isize>)) 
     where
         P: Process<C>
     {
@@ -57,6 +59,27 @@ where
             }
             self.println();
         }
+    }
+}
+
+pub struct WriteableScreen<B>
+where
+    B: Write,
+{
+    buffer: B,
+}
+
+impl<T, C, B> LinearScreen<T, C> for WriteableScreen<B>
+where
+    T: Copy + Display,
+    C: Channel<T> + Channel<(isize, isize)> + Default,
+    B: Write,
+{
+    fn print(&mut self, value: T) {
+        writeln!(self.buffer, "{}", value);
+    }
+    fn println(&mut self) {
+        writeln!(self.buffer, "\x1b[0m");
     }
 }
 
