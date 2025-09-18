@@ -35,12 +35,13 @@ where
     }
 }
 
-pub trait Screen<T, C>
+pub trait LinearScreen<T, C>
 where
     T: Copy,
     C: Channel<T> + Channel<(isize, isize)> + Default,
 {
     fn print(&self, value: T);
+    fn println(&self);
     fn display<P>(&self, process: P, range: (Range<isize>, Range<isize>)) 
     where
         P: Process<C>
@@ -54,7 +55,7 @@ where
                 let pixel = channel.get();
                 self.print(pixel);
             }
-            println!("\x1b[0m")
+            self.println();
         }
     }
 }
