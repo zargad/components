@@ -1,4 +1,3 @@
-pub mod components;
 pub mod channels;
 pub mod processes;
 pub mod two_dimensional;
