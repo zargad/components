@@ -69,6 +69,15 @@ where
     buffer: B,
 }
 
+impl<B> WriteableScreen<B>
+where
+    B: Write,
+{
+    pub fn new(buffer: B) -> Self {
+        Self { buffer }
+    }
+}
+
 impl<T, C, B> LinearScreen<T, C> for WriteableScreen<B>
 where
     T: Copy + Display,
